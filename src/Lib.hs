@@ -45,7 +45,7 @@ data Sentence o cfg ctx where
     SConcat :: Sentence o cfg ctx -> Sentence o cfg ctx -> Sentence o cfg ctx
 
 instance CanGen Expr Json JsonConfig PlainCtx where
-    gen (AddE l r) cfg ctx = JsonArray [gen l cfg ctx, JsonStr "-", gen r cfg ctx]
+    gen (AddE l r) cfg ctx = JsonArray [gen l cfg ctx, JsonStr "+", gen r cfg ctx]
     -- gen (SubE l r) cfg= JsonArray [JsonStr "-"]
     gen (SubE l r) cfg ctx = JsonArray [gen l cfg ctx, JsonStr "-", gen r cfg ctx]
     gen (IntE i)   cfg ctx = JsonNum i
