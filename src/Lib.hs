@@ -46,7 +46,6 @@ data Sentence o cfg ctx where
 
 instance CanGen Expr Json JsonConfig PlainCtx where
     gen (AddE l r) cfg ctx = JsonArray [gen l cfg ctx, JsonStr "+", gen r cfg ctx]
-    -- gen (SubE l r) cfg= JsonArray [JsonStr "-"]
     gen (SubE l r) cfg ctx = JsonArray [gen l cfg ctx, JsonStr "-", gen r cfg ctx]
     gen (IntE i)   cfg ctx = JsonNum i
 
@@ -56,6 +55,7 @@ instance CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig PlainCtx whe
     gen (SConcat l r) cfg ctx = JsonArray [gen l cfg ctx, gen r cfg ctx]
 
 data OtherCtx = OtherCtx
+
 instance CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig OtherCtx where -- OtherCtx is a variant that discards strings (as Null, but renders everything else with a PlainCtx)
     gen (S s)         cfg ctx = JsonNull
     gen (SGen c)      cfg ctx = gen c cfg PlainCtx
@@ -69,10 +69,13 @@ ex2' :: Sentence Json JsonConfig PlainCtx
 ex2' = SConcat (S "Hello, World!") (SGen $ AddE (IntE 1) (SubE (IntE 2) (IntE 3)))
 
 
-conv_ex2 :: CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig PlainCtx => Json
+-- conv_ex2 :: CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig PlainCtx => Json
+conv_ex2 :: Json
 conv_ex2 = gen ex2 JsonConfig PlainCtx
 
-conv_ex2' :: CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig PlainCtx => Json
+-- conv_ex2' :: CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig OtherCtx => Json
+-- conv_ex2' :: CanGen (Sentence Json JsonConfig PlainCtx) Json JsonConfig PlainCtx => Json -- TODO: Figure out why this type signature work too.
+conv_ex2' :: Json
 conv_ex2' = gen ex2' JsonConfig OtherCtx
 
 s_ex2 :: String
