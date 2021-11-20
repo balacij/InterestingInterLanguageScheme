@@ -1,13 +1,10 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
 
--- I really wish we didn't need AllowAmbiguousTypes and FlexibleInstances, but it appears we do...
+-- I really wish we didn't need FlexibleContexts and FlexibleInstances, but it appears we do...
+--      (I don't quite understand fully _why_ we need them either.)
 
 module Lib
     ( someFunc
