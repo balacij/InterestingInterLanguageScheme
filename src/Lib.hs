@@ -5,6 +5,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 -- I really wish we didn't need AllowAmbiguousTypes and FlexibleInstances, but it appears we do...
 
@@ -39,8 +40,8 @@ class CanGen i o cfg ctx where
 data Expr = AddE Expr Expr | SubE Expr Expr | IntE Int
 
 data Sentence o cfg ctx where
-    S :: String -> Sentence o cfg ctx
-    SGen :: CanGen i o cfg ctx => i -> Sentence o cfg ctx
+    S       :: String -> Sentence o cfg ctx
+    SGen    :: CanGen i o cfg ctx => i -> Sentence o cfg ctx
     SConcat :: Sentence o cfg ctx -> Sentence o cfg ctx -> Sentence o cfg ctx
 
 instance CanGen Expr Json JsonConfig PlainCtx where
@@ -83,10 +84,37 @@ s_ex2 = show conv_ex2
 s_ex2_othCtx :: String
 s_ex2_othCtx = show conv_ex2_othCtx
 
+{-
+
+NOTE: We can trim down allowed languages, but I intentionally complicated it, more practically, we might have a target language specifically that they all might be usable in.
+
+-}
+
+
+data Sentence' where
+    S'       :: String -> Sentence'
+    SGen'    :: (CanGen i Json JsonConfig PlainCtx) => i -> Sentence' -- SGen' now only allows terms that are convertible to Json, with a JsonConfig and in the PlainCtx
+    SConcat' :: Sentence' -> Sentence' -> Sentence'
+
+instance CanGen Sentence' Json JsonConfig PlainCtx where
+    gen (S' s)         cfg ctx = JsonStr s
+    gen (SGen' i)      cfg ctx = gen i cfg ctx
+    gen (SConcat' l r) cfg ctx = JsonArray [gen l cfg ctx, gen r cfg ctx]
+
+ex3 :: Sentence'
+ex3 = SConcat' (SGen' $ AddE (IntE 10) (IntE 30)) (SConcat' (S' "Hello, world!") (SGen' $ SubE (IntE 20) (IntE 30)))
+
+conv_ex3 :: Json
+conv_ex3 = gen ex3 JsonConfig PlainCtx
+
+s_ex3 :: String
+s_ex3 = show conv_ex3
+
 someFunc :: IO ()
 someFunc = do
     putStrLn s_ex2
     putStrLn s_ex2_othCtx
+    putStrLn s_ex3 -- This one might not actually be so bad! This might actually work!
 
 {-
 
