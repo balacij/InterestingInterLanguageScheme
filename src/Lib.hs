@@ -1,7 +1,11 @@
+{- Required Extensions -}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
+
+{- Optional Extensions -}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 
 -- I really wish we didn't need FlexibleContexts and FlexibleInstances, but it appears we do...
 --      (I don't quite understand fully _why_ we need them either.)
@@ -107,6 +111,8 @@ conv_ex3 = gen ex3 JsonConfig PlainCtx
 
 type Sentence'' = Sentence Json JsonConfig PlainCtx
 
+-- Unfortunately, HLS won't be able to resolve this type signature automatically
+-- because Sentence'' is just a type synonym.
 ex4 :: Sentence''
 ex4 = SConcat (S "Example 4!") (SGen $ AddE (IntE 1) (SubE (IntE 2) (IntE 3)))
 
