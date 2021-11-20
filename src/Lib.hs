@@ -13,6 +13,7 @@ module Lib
     ( someFunc
     ) where
 import Data.List (intercalate)
+import qualified Data.Functor as Drasil
 
 data PlainCtx = PlainCtx
 
@@ -80,12 +81,6 @@ conv_ex2 = gen ex2 JsonConfig PlainCtx
 conv_ex2_othCtx :: Json
 conv_ex2_othCtx = gen ex2 JsonConfig OtherCtx
 
-s_ex2 :: String
-s_ex2 = show conv_ex2
-
-s_ex2_othCtx :: String
-s_ex2_othCtx = show conv_ex2_othCtx
-
 {-
     NOTE: We can trim down allowed languages, but I intentionally complicated it above.
     More practically, we might have a target language specifically that they should all
@@ -109,18 +104,28 @@ ex3 = SConcat' (SGen' $ AddE (IntE 10) (IntE 30)) (SConcat' (S' "Hello, world!")
 conv_ex3 :: Json
 conv_ex3 = gen ex3 JsonConfig PlainCtx
 
-s_ex3 :: String
-s_ex3 = show conv_ex3
+{-
+    Alternatively, a much more configurable, less constricted variant  (which I think I prefer)...
+-}
+
+type Sentence'' = Sentence Json JsonConfig PlainCtx
+
+ex4 :: Sentence''
+ex4 = SConcat (S "Example 4!") (SGen $ AddE (IntE 1) (SubE (IntE 2) (IntE 3)))
+
+conv_ex4 :: Json
+conv_ex4 = gen ex4 JsonConfig PlainCtx
 
 someFunc :: IO ()
 someFunc = do
-    putStrLn s_ex2
-    putStrLn s_ex2_othCtx
-    putStrLn s_ex3 -- This one might not actually be so bad! This might actually work!
+    print conv_ex2
+    print conv_ex2_othCtx
+    print conv_ex3 -- This one might not actually be so bad! This might actually work!
+    print conv_ex4 -- probably the best one because it's the most generable. With this, we can force that components can target compiling to nearly any other language!
 
 {-
 
-Important notes: 
+Notes: 
     - we can have "higher level" gens that use "higher level configs" to use already written "gen"s that use "lower level configs"!!!!
         - This is a huge 'plus' for re-usability!
     - We are defining terms accepted into a language as the ways in which it can be "printed"/"gen"ed while carried by the carrying language.
@@ -131,5 +136,6 @@ Important notes:
         - a context of the printing output (e.g., through this, we can have multiple instances for a particular Input/Output, but
             retain knowledge of the differentiation via the 'context'!)
     - The above definition might also be my definition for #2896 - "What is printing?"
+    - This appears to be fit reasonably well in Drasil...
 
 -}
