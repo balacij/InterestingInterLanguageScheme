@@ -1,18 +1,16 @@
 {- Required Extensions -}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-} -- ExistentialQuantification, at least
+{-# LANGUAGE MultiParamTypeClasses #-} -- Required for the classes
+{-# LANGUAGE FlexibleInstances #-} -- Required to be able to instantiate typeclasses for specific subsets
+{-# LANGUAGE FlexibleContexts #-} -- Required to constrain to specific subsets of constraints
 
 {- Optional Extensions -}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
--- I really wish we didn't need FlexibleContexts and FlexibleInstances, but it appears we do...
---      (I don't quite understand fully _why_ we need them either.)
+module Lib (
+    someFunc, someFunc2
+) where
 
-module Lib
-    ( someFunc
-    ) where
 import Data.List (intercalate)
 import qualified Data.Functor as Drasil
 
@@ -124,7 +122,7 @@ someFunc = do
     print conv_ex2
     print conv_ex2_othCtx
     print conv_ex3 -- This one might not actually be so bad! This might actually work!
-    print conv_ex4 -- probably the best one because it's the most generable. With this, we can force that components can target compiling to nearly any other language!
+    print conv_ex4 -- probably the best one because it leaves it general, but it depends on usecase. With this, we can force that components can target compiling to nearly any language!
 
 {-
 
@@ -140,5 +138,12 @@ Notes:
             retain knowledge of the differentiation via the 'context'!)
     - The above definition might also be my definition for #2896 - "What is printing?"
     - This appears to be fit reasonably well in Drasil...
+    - By having target encodings we 'compile' to, we can compose languages together via typeclasses by saying that certain components of the language *just* need to be compilable to that target language!
 
 -}
+
+
+someFunc2 :: IO ()
+someFunc2 = do
+    print "Temp."
+
