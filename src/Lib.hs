@@ -128,7 +128,7 @@ someFunc = do
 Notes: 
     - we can have "higher level" gens that use "higher level configs" to use already written "gen"s that use "lower level configs"!!!!
         - This is a huge 'plus' for re-usability!
-    - We are defining terms accepted into a language as the ways in which it can be "printed"/"gen"ed while carried by the carrying language.
+    - We are defining terms accepted into a language as the ways in which it can be "printed"/"gen"ed and handled by another (arguably, "super") language.
     - A printer here is:
         - an input
         - an output
